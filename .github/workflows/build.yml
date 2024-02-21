@@ -33,3 +33,6 @@ jobs:
         ./myapp &
         sleep 5
         pkill myapp
+        
+    - name: Test with the Go CLI
+      run: go test
