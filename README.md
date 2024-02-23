@@ -17,7 +17,8 @@ To specify what version of Go you would like to use with the Docker image:
 
 To run the Docker image: 
 
-`docker run -p 8080:8080 hello-world`
+`docker run -d -p 8080:8080 hello-world`
+
 ## Compiling on ACT 
 At the moment, the GA workflow is simple. Since we are listening for http requests, the workflow will not terminate until explicitly told to do so. The workflow will be updated as the application changes. 
 To get started, ensure that [ACT is installed](https://nektosact.com/installation/index.html) on your system.
