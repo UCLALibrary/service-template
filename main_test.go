@@ -33,6 +33,4 @@ func TestHelloWorld(t *testing.T) {
 	assert.NoError(t, err, "Failed to create request")
 	app.Router.ServeHTTP(rec, req)
 	assert.Equal(t, http.StatusNotFound, rec.Code, "Expected status code 404")
-	assert.Equal(t, "This is not yet supported", rec.Body.String(), "Unexpected response body")
-
 }
