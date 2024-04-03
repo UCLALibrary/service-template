@@ -4,38 +4,38 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
 const Port = 8080
 
 // App represents your application.
 type App struct {
-	Router *gin.Engine
+	Router *echo.Echo
 }
 
 func main() {
 	app := NewApp()
 	app.Routes()
-	app.Router.Run(":" + strconv.Itoa(Port))
+	app.Router.Start(":" + strconv.Itoa(Port))
 }
 
 // NewApp initializes a new instance of your application.
 func NewApp() *App {
-	r := gin.Default()
-	return &App{Router: r}
+	e := echo.New()
+	return &App{Router: e}
 }
 
 // Run starts the server.
 func (app *App) Routes() {
 	app.Router.GET("/", helloWorld)
-	app.Router.NoRoute(app.NotFoundHandler)
+	app.Router.RouteNotFound("/*", NotFoundHandler)
 }
 
-func helloWorld(c *gin.Context) {
-	c.String(http.StatusOK, "hello world")
+func helloWorld(c echo.Context) error {
+	return c.String(http.StatusOK, "hello world")
 }
 
-func (app *App) NotFoundHandler(c *gin.Context) {
-	c.String(http.StatusNotFound, "This is not yet supported")
+func NotFoundHandler(c echo.Context) error {
+	return echo.NewHTTPError(http.StatusNotFound, "This is not yet supported")
 }
