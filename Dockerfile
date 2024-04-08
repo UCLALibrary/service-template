@@ -3,6 +3,9 @@ ARG GO_VERSION=1.20
 # Use the official Go image as the base image for the build stage
 FROM golang:${GO_VERSION}-alpine AS build
 
+LABEL org.opencontainers.image.source="https://github.com/uclalibrary/service-template"
+LABEL org.opencontainers.image.description="A template for UCLA Library services written in Go"
+
 # Set the working directory inside the container
 WORKDIR /app
 
