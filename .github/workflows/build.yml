@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CICD
+name: CI Test
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -9,8 +9,9 @@ on:
     branches:
       - main
   push:
-    branches: 
-      SERV-1031
+    branches:
+      - SERV-1031-KSC
+      - SERV-1031
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -23,22 +24,22 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
-    
+
     # Setup Go
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.21.0' # The Go version to download (if necessary) and use.
-    
+        go-version: '1.22.1' # The Go version to download (if necessary) and use.
+
     - name: Install Dependencies
       run: go get -u github.com/testcontainers/testcontainers-go@v0.28.0
-    
+
     - name: Build and Run
       run: |
-        go build -o myapp main.go
-        ./myapp &
+        go build -o service-template main.go
+        ./service-template &
         sleep 5
-        pkill myapp
-        
+        pkill service-template
+
     - name: Test with the Go CLI
       run: go test
