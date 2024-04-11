@@ -1,4 +1,4 @@
-module github.com/UCLALibrary/hello-world-go.git
+module github.com/UCLALibrary/service-template.git
 
 go 1.22.1
 
