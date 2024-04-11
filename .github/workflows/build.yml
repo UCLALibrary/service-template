@@ -34,12 +34,13 @@ jobs:
     - name: Install Dependencies
       run: go get -u github.com/testcontainers/testcontainers-go@v0.28.0
 
-    - name: Build and Run
+    - name: Build and Run Service
       run: |
-        go build -o service-template main.go
-        ./service-template &
-        sleep 5
-        pkill service-template
+        go build -o service main.go
+        ./service &
 
     - name: Test with the Go CLI
       run: go test
+
+    - name: Stop Service
+      run: pkill service
