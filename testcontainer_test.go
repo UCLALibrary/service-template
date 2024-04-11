@@ -16,7 +16,7 @@ import (
 func TestApp(t *testing.T) {
 	// Define the container request
 	req := testcontainers.ContainerRequest{
-		Image:        "hello-world",
+		Image:        "service-template",
 		ExposedPorts: []string{"8888/tcp"},
 		SkipReaper:   true,
 		WaitingFor:   wait.ForHTTP("/").WithPort("8888/tcp"),
