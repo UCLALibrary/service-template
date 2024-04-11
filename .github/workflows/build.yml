@@ -32,11 +32,10 @@ jobs:
 
     - name: Build and Run Service
       run: |
-        go build -o service main.go
-        ./service &
+        docker build -t service-template .
+        docker run -d -p 8888:8888 service-template
+#        go build -o service main.go
+#        ./service &
 
     - name: Test with the Go CLI
       run: go test
-
-    - name: Stop Service
-      run: pkill service
