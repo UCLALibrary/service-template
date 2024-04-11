@@ -17,9 +17,9 @@ func TestApp(t *testing.T) {
 	// Define the container request
 	req := testcontainers.ContainerRequest{
 		Image:        "hello-world",
-		ExposedPorts: []string{"8080/tcp"},
+		ExposedPorts: []string{"8888/tcp"},
 		SkipReaper:   true,
-		WaitingFor:   wait.ForHTTP("/").WithPort("8080/tcp"),
+		WaitingFor:   wait.ForHTTP("/").WithPort("8888/tcp"),
 	}
 
 	// Create a context for the container
@@ -41,7 +41,7 @@ func TestApp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	port, err := container.MappedPort(ctx, "8080/tcp")
+	port, err := container.MappedPort(ctx, "8888/tcp")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +64,7 @@ func TestApp(t *testing.T) {
 	// Any requeset body will work since POST requests are not currently allowed
 	requestBody := []byte(`{"key": "value"}`)
 
-	resp, err = client.Post("http://"+host+":"+strconv.Itoa(port.Int())+"/", "application/json", bytes.NewBuffer(requestBody))
+	resp, err = client.Post("http://" + host + ":" + strconv.Itoa(port.Int()) + "/", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		t.Fatal(err)
 	}

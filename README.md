@@ -9,15 +9,15 @@ To run the project run:
 ## Creating a Docker image 
 To run on Docker first build the Docker image: 
 
-`docker build -t hello-world . `
+`docker build -t hello-world .`
 
 To specify what version of Go you would like to use with the Docker image:
 
-`docker build --build-arg GO_VERSION=[YOUR_VERSION] -t hello-world.`
+`docker build --build-arg GO_VERSION=[YOUR_VERSION] -t hello-world .`
 
 To run the Docker image: 
 
-`docker run -d -p 8080:8080 hello-world`
+`docker run -d -p 8888:8888 hello-world`
 
 ## Compiling on ACT 
 At the moment, the GA workflow is simple. Since we are listening for http requests, the workflow will not terminate until explicitly told to do so. The workflow will be updated as the application changes. 

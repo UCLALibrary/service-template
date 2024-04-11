@@ -1,4 +1,4 @@
-ARG GO_VERSION=1.20
+ARG GO_VERSION=1.22.1
 
 # Use the official Go image as the base image for the build stage
 FROM golang:${GO_VERSION}-alpine AS build
@@ -26,7 +26,7 @@ WORKDIR /
 COPY --from=build /godocker /godocker
 
 # Expose the port on which the application will run
-EXPOSE 8080
+EXPOSE 8888
 
 # Specify the command to be used when the image is used to start a container
 ENTRYPOINT ["/godocker"]
