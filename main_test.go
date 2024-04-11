@@ -28,6 +28,7 @@ func TestHelloWorld(t *testing.T) {
 
 	// Create a POST test request
 	req, err = http.NewRequest("POST", "/", nil)
+
 	// A new recorder must be created
 	rec = httptest.NewRecorder()
 	assert.NoError(t, err, "Failed to create request")

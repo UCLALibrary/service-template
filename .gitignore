@@ -22,3 +22,6 @@ go.work
 
 # Add IDE files
 .idea/
+
+# Build artifacts
+service

@@ -1,27 +1,37 @@
-# Hello World
-This is a simple Hello World go program that utilizes Gin. It is meant to help us, the Services team, learn about building a Go program that uses best practices we will have during development of larger programs 
+# Service Template
+
+This is a simple GoLang service template that utilizes Echo. It is meant to serve as the foundation for a variety of microservices.
 
 ## Building the Project
+
 To run the project run: 
 
 `go run main.go`
 
 ## Creating a Docker image 
+
 To run on Docker first build the Docker image: 
 
-`docker build -t hello-world . `
+`docker build -t service-template .`
 
 To specify what version of Go you would like to use with the Docker image:
 
-`docker build --build-arg GO_VERSION=[YOUR_VERSION] -t hello-world.`
+`docker build --build-arg GO_VERSION=[YOUR_VERSION] -t service-template .`
 
 To run the Docker image: 
 
-`docker run -p 8080:8080 hello-world`
+`docker run -d -p 8888:8888 service-template`
+
 ## Compiling on ACT 
-At the moment, the GA workflow is simple. Since we are listening for http requests, the workflow will not terminate until explicitly told to do so. The workflow will be updated as the application changes. 
+
+We use [ACT](https://github.com/nektos/act) to build the project. Our GitHub Actions' workflow (which is also used locally by ACT) is pretty simple.
+
 To get started, ensure that [ACT is installed](https://nektosact.com/installation/index.html) on your system.
 
-Now that ACT is installed you can see the workflow run locally by running: 
+Now that ACT is installed, you can see the workflow run locally by running: 
 
-`act -j build` 
+`act -j build`
+
+## Contact
+
+If you have any questions or suggestions, feel free to [open a ticket](https://github.com/UCLALibrary/service-template/issues) on project's GitHub repo.
