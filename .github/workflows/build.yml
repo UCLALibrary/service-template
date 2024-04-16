@@ -1,15 +1,18 @@
-# This is a basic workflow to help you get started with Actions
 
 name: CI Test
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# Defines environmental variables
+env:
+  GO_VERSION: '1.22.2'
+  SERVICE_NAME: 'service-template'
+
+# Controls when the action will run
 on:
   pull_request:
     branches:
       - main
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# A series of workflow jobs that can run sequentially or in parallel
 jobs:
   build:
     name: Build and Test
@@ -19,23 +22,21 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v4
+    - name: Checkout source
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-    # Setup Go
+    # Setup the Go environment
     - name: Setup Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
       with:
-        go-version: '1.22.1' # The Go version to download (if necessary) and use.
+        go-version: "${{ env.GO_VERSION }}"
 
-    - name: Install Dependencies
-      run: go get -u github.com/testcontainers/testcontainers-go@v0.28.0
+    # Build the container so TestContainers has something to run
+    - name: Build Docker container
+      run: docker build -t "${{ env.SERVICE_NAME }}" .
 
-    - name: Build and Run Service
-      run: |
-        go mod tidy
-        docker build -t service-template .
-        docker run -d -p 8888:8888 service-template
-
+    # Run the tests
     - name: Test with the Go CLI
       run: go test

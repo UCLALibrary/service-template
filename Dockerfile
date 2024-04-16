@@ -1,11 +1,18 @@
+##
+## A Dockefile for UCLA Library's GoLang microservices.
+##
+
 ARG GO_VERSION=1.22.1
 ARG ALPINE_VERSION=3.19
+ARG SERVICE_NAME="service-template"
 
-# Use the official Go image as the base image for the build stage
+##
+## STEP 1 - BUILD
+##
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS build
 
-LABEL org.opencontainers.image.source="https://github.com/uclalibrary/service-template"
-LABEL org.opencontainers.image.description="A template for UCLA Library services written in Go"
+LABEL org.opencontainers.image.source="https://github.com/uclalibrary/${SERVICE_NAME}"
+LABEL org.opencontainers.image.description="UCLA Library's ${SERVICE_NAME} container"
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -21,13 +28,17 @@ RUN go build -o /service
 ##
 FROM alpine:${ALPINE_VERSION}
 
-WORKDIR /
+# Create a non--root user
+RUN addgroup -S service && adduser -S service -G service
 
 # Copy the executable from the build stage
-COPY --from=build /service /service
+COPY --from=build --chown=service:service --chmod=0700 /service /sbin/service
 
 # Expose the port on which the application will run
 EXPOSE 8888
 
+# Create a non-root user
+USER service
+
 # Specify the command to be used when the image is used to start a container
-ENTRYPOINT [ "/service" ]
+ENTRYPOINT [ "/sbin/service" ]
