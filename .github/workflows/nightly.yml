@@ -44,5 +44,5 @@ jobs:
           ALPINE_VERSION=${{ env.ALPINE_VERSION }}
           SERVICE_NAME=${{ env.SERVICE_NAME }}
         labels: |
-          org.opencontainers.image.source=https://github.com/uclalibrary/service-template
+          org.opencontainers.image.source=https://github.com/uclalibrary/${{ env.SERVICE_NAME }}
           org.opencontainers.image.description=UCLA Library's service-template
