@@ -44,4 +44,4 @@ jobs:
           SERVICE_NAME=${{ env.SERVICE_NAME }}
         labels: |
           org.opencontainers.image.source=https://github.com/uclalibrary/${{ env.SERVICE_NAME }}
-          org.opencontainers.image.description=UCLA Library's service-template
+          org.opencontainers.image.description=UCLA Library's ${{ env.SERVICE_NAME }}
