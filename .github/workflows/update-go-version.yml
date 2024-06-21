@@ -26,23 +26,27 @@ jobs:
           latest_go_version=$(curl -s https://go.dev/VERSION?m=text)
           echo "::set-output name=latest_go_version::$latest_go_version"
 
+      - name: Get current Go version from go.mod
+        id: get-current-go
+        run: |
+          current_go_version=$(go mod edit -json | jq -r '.Go')
+          echo "::set-output name=current_go_version::$current_go_version"
+
       - name: Update go.mod with latest Go version
+        if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
         run: |
           latest_go_version=${{ steps.get-latest-go.outputs.latest_go_version }}
-          current_go_version=$(go mod edit -json | jq -r '.Go')
-          if [ "$latest_go_version" != "$current_go_version" ]; then
-            go mod edit -go=$latest_go_version
-            go mod tidy
-            git config --global user.name 'github-actions'
-            git config --global user.email 'github-actions@github.com'
-            git checkout -b update-go-version-$latest_go_version
-            git add go.mod go.sum
-            git commit -m "Update Go version to $latest_go_version"
-            git push --set-upstream origin update-go-version-$latest_go_version
-          fi
+          go mod edit -go=$latest_go_version
+          go mod tidy
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git checkout -b update-go-version-$latest_go_version
+          git add go.mod go.sum
+          git commit -m "Update Go version to $latest_go_version"
+          git push --set-upstream origin update-go-version-$latest_go_version
 
       - name: Amend commit message
-        if: ${{ steps.get-latest-go.outputs.latest_go_version != current_go_version }}
+        if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
