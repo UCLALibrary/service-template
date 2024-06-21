@@ -24,18 +24,27 @@ jobs:
         id: get-latest-go
         run: |
           latest_go_version=$(curl -s https://go.dev/VERSION?m=text)
+          latest_go_version=${latest_go_version#go}  # Strip the 'go' prefix
+          echo "Latest Go version: $latest_go_version"
           echo "::set-output name=latest_go_version::$latest_go_version"
 
       - name: Get current Go version from go.mod
         id: get-current-go
         run: |
           current_go_version=$(go mod edit -json | jq -r '.Go')
+          echo "Current Go version: $current_go_version"
           echo "::set-output name=current_go_version::$current_go_version"
+
+      - name: Debug versions
+        run: |
+          echo "Latest Go version: ${{ steps.get-latest-go.outputs.latest_go_version }}"
+          echo "Current Go version: ${{ steps.get-current-go.outputs.current_go_version }}"
 
       - name: Update go.mod with latest Go version
         if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
         run: |
           latest_go_version=${{ steps.get-latest-go.outputs.latest_go_version }}
+          echo "Updating go.mod to use Go version: $latest_go_version"
           go mod edit -go=$latest_go_version
           go mod tidy
           git config --global user.name 'github-actions'
