@@ -1,0 +1,74 @@
+name: Update Go Version
+
+on:
+  push:
+    branches:
+      - SERV-1117
+  schedule:
+    # Runs every day at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allows manual triggering of the workflow
+
+jobs:
+  update-go-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Set up Go
+        uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
+        with:
+          go-version: '1.x'
+
+      - name: Get latest Go version
+        id: get-latest-go
+        run: |
+          latest_go_version=$(curl -s https://go.dev/VERSION?m=text)
+          latest_go_version=${latest_go_version#go}  # Strip the 'go' prefix
+          echo "Latest Go version: $latest_go_version"
+          echo "::set-output name=latest_go_version::$latest_go_version"
+
+      - name: Get current Go version from go.mod
+        id: get-current-go
+        run: |
+          current_go_version=$(go mod edit -json | jq -r '.Go')
+          echo "Current Go version: $current_go_version"
+          echo "::set-output name=current_go_version::$current_go_version"
+
+      - name: Debug versions
+        run: |
+          echo "Latest Go version: ${{ steps.get-latest-go.outputs.latest_go_version }}"
+          echo "Current Go version: ${{ steps.get-current-go.outputs.current_go_version }}"
+
+      - name: Update go.mod with latest Go version
+        if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
+        run: |
+          latest_go_version=${{ steps.get-latest-go.outputs.latest_go_version }}
+          echo "Updating go.mod to use Go version: $latest_go_version"
+          go mod edit -go=$latest_go_version
+          go mod tidy
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git checkout -b update-go-version-$latest_go_version
+          git add go.mod go.sum
+          git commit -m "Update Go version to $latest_go_version"
+          git push --set-upstream origin update-go-version-$latest_go_version
+
+      - name: Amend commit message
+        if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git commit --amend -m "Update Go version in go.mod to ${{ steps.get-latest-go.outputs.latest_go_version }}"
+          git push --force
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+  
+      - name: Create pull request
+        run: gh pr create -B main -H ${{ steps.update-go-version.outputs.branch }} --title "Update Go version to ${{ steps.get-latest-go.outputs.latest_go_version }}" --body "This PR updates the Go version in the go.mod file to the latest available version."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
