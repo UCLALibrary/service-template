@@ -44,6 +44,7 @@ jobs:
           echo "Current Go version: ${{ steps.get-current-go.outputs.current_go_version }}"
 
       - name: Update go.mod with latest Go version
+        id: update-go-mod
         if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
         run: |
           latest_go_version=${{ steps.get-latest-go.outputs.latest_go_version }}
@@ -52,10 +53,11 @@ jobs:
           go mod tidy
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git checkout -b update-go-version-$latest_go_version
+          branch_name=update-go-version-$latest_go_version
+          git checkout -b $branch_name
           git add go.mod go.sum
           git commit -m "Update Go version to $latest_go_version"
-          git push --set-upstream origin update-go-version-$latest_go_version
+          git push --set-upstream origin $branch_name
           echo "::set-output name=branch::$branch_name"
 
       - name: Amend commit message
@@ -70,6 +72,7 @@ jobs:
         run: sudo apt-get install gh
   
       - name: Create pull request
-        run: gh pr create -B main -H ${{ steps.update-go-version.outputs.branch }} --title "Update Go version to ${{ steps.get-latest-go.outputs.latest_go_version }}" --body "This PR updates the Go version in the go.mod file to the latest available version."
+        if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
+        run: gh pr create -B main -H ${{ steps.update-go-mod.outputs.branch }} --title "Update Go version to ${{ steps.get-latest-go.outputs.latest_go_version }}" --body "This PR updates the Go version in the go.mod file to the latest available version."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
