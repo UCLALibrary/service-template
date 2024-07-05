@@ -40,6 +40,17 @@ jobs:
           echo "Latest Go version: ${{ steps.get-latest-go.outputs.latest_go_version }}"
           echo "Current Go version: ${{ steps.get-current-go.outputs.current_go_version }}"
 
+      - name: Check if branch exists on remote
+        id: check-branch
+        run: |
+          branch_name=update-go-version-${{ steps.get-latest-go.outputs.latest_go_version }}
+            if git ls-remote --exit-code --heads origin $branch_name; then
+              echo "Branch $branch_name already exists on the remote."
+              echo "::set-output name=branch_exists::true"
+            else
+              echo "::set-output name=branch_exists::false"
+            fi
+
       - name: Update go.mod with latest Go version
         id: update-go-mod
         if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
@@ -51,10 +62,6 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           branch_name=update-go-version-$latest_go_version
-          if git ls-remote --exit-code --heads origin $branch_name; then
-            echo "Branch $branch_name already exists. Exiting."
-            exit 1
-          fi
           git checkout -b $branch_name
           git add go.mod go.sum
           git commit -m "Update Go version to $latest_go_version"
