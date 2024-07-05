@@ -51,7 +51,7 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           branch_name=update-go-version-$latest_go_version
-          if git show-ref --verify --quiet refs/heads/$branch_name; then
+          if git ls-remote --exit-code --heads origin $branch_name; then
             echo "Branch $branch_name already exists. Exiting."
             exit 1
           fi
