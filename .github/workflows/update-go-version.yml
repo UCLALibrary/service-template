@@ -35,25 +35,29 @@ jobs:
           echo "Current Go version: $current_go_version"
           echo "::set-output name=current_go_version::$current_go_version"
 
-      - name: Debug versions
-        run: |
-          echo "Latest Go version: ${{ steps.get-latest-go.outputs.latest_go_version }}"
-          echo "Current Go version: ${{ steps.get-current-go.outputs.current_go_version }}"
-
       - name: Check if branch exists on remote
         id: check-branch
         run: |
           branch_name=update-go-version-${{ steps.get-latest-go.outputs.latest_go_version }}
             if git ls-remote --exit-code --heads origin $branch_name; then
               echo "Branch $branch_name already exists on the remote."
-              echo "::set-output name=branch_exists::true"
+              echo "::set-output name=branch_not_exist::false"
             else
-              echo "::set-output name=branch_exists::false"
+              echo "::set-output name=branch_not_exist::true"
+            fi
+
+      - name: Check if Go version needs update
+        id: check-update
+        run: |
+            if [ "${{ steps.get-latest-go.outputs.latest_go_version }}" != "${{ steps.get-current-go.outputs.current_go_version }}" ]; then
+              echo "::set-output name=update_needed::true"
+            else
+              echo "::set-output name=update_needed::false"
             fi
 
       - name: Update go.mod with latest Go version
         id: update-go-mod
-        if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
+        if: ${{ steps.check-update.outputs.update_needed && steps.check-branch.outputs.branch_not_exist}}
         run: |
           latest_go_version=${{ steps.get-latest-go.outputs.latest_go_version }}
           echo "Updating go.mod to use Go version: $latest_go_version"
@@ -69,7 +73,7 @@ jobs:
           echo "::set-output name=branch::$branch_name"
 
       - name: Amend commit message
-        if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
+        if: ${{ steps.check-update.outputs.update_needed && steps.check-branch.outputs.branch_not_exist}}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
@@ -80,7 +84,7 @@ jobs:
         run: sudo apt-get install gh
   
       - name: Create pull request
-        if: ${{ steps.get-latest-go.outputs.latest_go_version != steps.get-current-go.outputs.current_go_version }}
+        if: ${{ steps.check-update.outputs.update_needed && steps.check-branch.outputs.branch_not_exist}}
         run: gh pr create -B main -H ${{ steps.update-go-mod.outputs.branch }} --title "Update Go version to ${{ steps.get-latest-go.outputs.latest_go_version }}" --body "This PR updates the Go version in the go.mod file to the latest available version."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
