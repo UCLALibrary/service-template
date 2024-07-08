@@ -15,6 +15,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
+      - name: Import bot's GPG key for signing commits
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
+        with:
+          gpg_private_key: ${{ secrets.BOT_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.BOT_GPG_PASSPHRASE }}
+          git_config_global: true
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
       - name: Set up Go
         uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
@@ -68,17 +78,9 @@ jobs:
           branch_name=update-go-version-$latest_go_version
           git checkout -b $branch_name
           git add go.mod go.sum
-          git commit -m "Update Go version to $latest_go_version"
+          git commit -S -m "Update Go version to $latest_go_version"
           git push --set-upstream origin $branch_name
           echo "::set-output name=branch::$branch_name"
-
-      - name: Amend commit message
-        if: ${{ steps.check-update.outputs.update_needed == 'true' && steps.check-branch.outputs.branch_not_exist == 'true'}}
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git commit --amend -m "Update Go version in go.mod to ${{ steps.get-latest-go.outputs.latest_go_version }}"
-          git push --force
 
       - name: Install GitHub CLI
         run: sudo apt-get install gh
