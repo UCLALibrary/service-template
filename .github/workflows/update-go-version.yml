@@ -48,7 +48,7 @@ jobs:
       - name: Check if branch exists on remote
         id: check-branch
         run: |
-          branch_name=update-go-version-${{ steps.get-latest-go.outputs.latest_go_version }}
+          branch_name=test-${{ steps.get-latest-go.outputs.latest_go_version }}
             if git ls-remote --exit-code --heads origin $branch_name; then
               echo "Branch $branch_name already exists on the remote."
               echo "::set-output name=branch_not_exist::false"
@@ -75,7 +75,7 @@ jobs:
           go mod tidy
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          branch_name=update-go-version-$latest_go_version
+          branch_name=test-$latest_go_version
           git checkout -b $branch_name
           git add go.mod go.sum
           git commit -S -m "Update Go version to $latest_go_version"
