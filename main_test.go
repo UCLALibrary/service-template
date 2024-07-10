@@ -12,7 +12,7 @@ func TestHelloWorld(t *testing.T) {
 	app := NewApp()
 	app.Routes()
 
-	// Create a response recorder to record the response
+	// Create a response recorder to record the response.
 	rec := httptest.NewRecorder()
 
 	// Create a GET test request
