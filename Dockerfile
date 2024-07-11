@@ -2,14 +2,12 @@
 ## A Dockefile for UCLA Library's GoLang microservices.
 ##
 
-ARG GO_VERSION=1.22.1
-ARG ALPINE_VERSION=3.19
 ARG SERVICE_NAME="service-template"
 
 ##
 ## STEP 1 - BUILD
 ##
-FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS build
+FROM golang:1.22.5-alpine3.20 AS build
 
 LABEL org.opencontainers.image.source="https://github.com/uclalibrary/${SERVICE_NAME}"
 LABEL org.opencontainers.image.description="UCLA Library's ${SERVICE_NAME} container"
@@ -26,7 +24,7 @@ RUN go build -o /service
 ##
 ## STEP 2 - DEPLOY
 ##
-FROM alpine:${ALPINE_VERSION}
+FROM alpine:3.20
 
 # Create a non--root user
 RUN addgroup -S service && adduser -S service -G service
