@@ -33,8 +33,7 @@ jobs:
       - name: Get latest Go version
         id: get-latest-go
         run: |
-          latest_go_version=$(curl -s https://go.dev/VERSION?m=text)
-          latest_go_version=${latest_go_version#go}  # Strip the 'go' prefix
+          latest_go_version="1.22.5"
           echo "Latest Go version: $latest_go_version"
           echo "::set-output name=latest_go_version::$latest_go_version"
 
@@ -68,7 +67,7 @@ jobs:
       - name: Update go.mod with latest Go version
         id: update-go-mod
         run: |
-          latest_go_version=1.22.5
+          latest_go_version=${{ steps.get-latest-go.outputs.latest_go_version }}
           echo "Updating go.mod to use Go version: $latest_go_version"
           go mod edit -go=$latest_go_version
           go mod tidy
