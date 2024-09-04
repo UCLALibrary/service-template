@@ -68,7 +68,7 @@ jobs:
       - name: Update go.mod with latest Go version
         id: update-go-mod
         run: |
-          latest_go_version=${{ steps.get-latest-go.outputs.latest_go_version }}
+          latest_go_version=1.22.5
           echo "Updating go.mod to use Go version: $latest_go_version"
           go mod edit -go=$latest_go_version
           go mod tidy
