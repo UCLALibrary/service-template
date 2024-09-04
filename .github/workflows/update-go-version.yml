@@ -45,16 +45,16 @@ jobs:
           echo "Current Go version: $current_go_version"
           echo "::set-output name=current_go_version::$current_go_version"
 
-      - name: Check if branch exists on remote
-        id: check-branch
-        run: |
-          branch_name=update-go-version-${{ steps.get-latest-go.outputs.latest_go_version }}
-            if git ls-remote --exit-code --heads origin $branch_name; then
-              echo "Branch $branch_name already exists on the remote."
-              echo "::set-output name=branch_not_exist::false"
-            else
-              echo "::set-output name=branch_not_exist::true"
-            fi
+      # - name: Check if branch exists on remote
+      #   id: check-branch
+      #   run: |
+      #     branch_name=update-go-version-${{ steps.get-latest-go.outputs.latest_go_version }}
+      #       if git ls-remote --exit-code --heads origin $branch_name; then
+      #         echo "Branch $branch_name already exists on the remote."
+      #         echo "::set-output name=branch_not_exist::false"
+      #       else
+      #         echo "::set-output name=branch_not_exist::true"
+      #       fi
 
       - name: Check if Go version needs update
         id: check-update
@@ -67,7 +67,6 @@ jobs:
 
       - name: Update go.mod with latest Go version
         id: update-go-mod
-        if: ${{ steps.check-update.outputs.update_needed == 'true' && steps.check-branch.outputs.branch_not_exist == 'true'}}
         run: |
           latest_go_version=${{ steps.get-latest-go.outputs.latest_go_version }}
           echo "Updating go.mod to use Go version: $latest_go_version"
@@ -84,7 +83,6 @@ jobs:
         run: sudo apt-get install gh
   
       - name: Create pull request
-        if: ${{ steps.check-update.outputs.update_needed == 'true' && steps.check-branch.outputs.branch_not_exist == 'true'}}
         run: gh pr create -B main -H ${{ steps.update-go-mod.outputs.branch }} --title "Update Go version to ${{ steps.get-latest-go.outputs.latest_go_version }}" --body "This PR updates the Go version in the go.mod file to the latest available version."
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
