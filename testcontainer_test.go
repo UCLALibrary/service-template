@@ -33,7 +33,12 @@ func TestApp(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer container.Terminate(ctx)
+
+	defer func() {
+		if err := container.Terminate(ctx); err != nil {
+			t.Fatal(err)
+		}
+	}()
 
 	// Get the host and port for the running container
 	host, err := container.Host(ctx)
@@ -64,7 +69,7 @@ func TestApp(t *testing.T) {
 	// Any requeset body will work since POST requests are not currently allowed
 	requestBody := []byte(`{"key": "value"}`)
 
-	resp, err = client.Post("http://" + host + ":" + strconv.Itoa(port.Int()) + "/", "application/json", bytes.NewBuffer(requestBody))
+	resp, err = client.Post("http://"+host+":"+strconv.Itoa(port.Int())+"/", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		t.Fatal(err)
 	}
