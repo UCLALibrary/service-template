@@ -51,10 +51,12 @@ Now that ACT is installed, you can see the workflow run locally by running:
 This Makefile provides another convenient way to build, test, lint, and manage Docker containers for the project.
 
 ### Variables
+
 `DOCKER_IMAGE`: The name of the Docker image (default: service-template).
 `DOCKER_TAG`: The tag for the Docker image (default: latest).
 
 ### Commands
+
 To build and run the Go project locally
 
     make run
