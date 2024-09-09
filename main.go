@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -17,7 +18,11 @@ type App struct {
 func main() {
 	app := NewApp()
 	app.Routes()
-	app.Router.Start(":" + strconv.Itoa(Port))
+	err := app.Router.Start(":" + strconv.Itoa(Port))
+
+	if err != nil {
+		fmt.Println("There was an error starting the app")
+	}
 }
 
 // NewApp initializes a new instance of your application.
