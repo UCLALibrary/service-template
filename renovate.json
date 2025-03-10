@@ -9,12 +9,6 @@
   },
   "packageRules": [
     {
-      "matchManagers": ["gomod"],
-      "matchDepNames": ["go"],
-      "matchDepTypes": ["golang"],
-      "rangeStrategy": "bump"
-    },
-    {
       "matchDatasources": ["golang-version"],
       "matchDepNames": ["go"],
       "rangeStrategy": "bump"
