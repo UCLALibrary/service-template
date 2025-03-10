@@ -12,6 +12,18 @@
       "matchDatasources": ["golang-version"],
       "matchDepNames": ["go"],
       "rangeStrategy": "bump"
+    },
+    {
+      "matchManagers": ["gomod"],
+      "groupName": "Go updates"
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "groupName": "Docker updates"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions updates"
     }
   ]
 }
