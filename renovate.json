@@ -6,5 +6,13 @@
   "enabledManagers": ["gomod", "dockerfile", "github-actions"],
   "golang": {
     "enabled": true
-  }
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["gomod"],
+      "matchDepNames": ["go"],
+      "matchDepTypes": ["golang"],
+      "rangeStrategy": "bump"
+    }
+  ]
 }
