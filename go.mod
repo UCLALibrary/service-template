@@ -1,6 +1,6 @@
 module github.com/UCLALibrary/service-template.git
 
-go 1.24.2
+go 1.25.4
 
 require (
 	github.com/labstack/echo/v4 v4.13.4
