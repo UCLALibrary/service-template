@@ -3,7 +3,7 @@ module github.com/UCLALibrary/service-template.git
 go 1.25.4
 
 require (
-	github.com/labstack/echo/v4 v4.14.0
+	github.com/labstack/echo/v4 v4.15.0
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.40.0
 )
