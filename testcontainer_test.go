@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"net/http"
-	"strconv"
 	"testing"
 	"time"
 
@@ -46,19 +45,17 @@ func TestApp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	port, err := container.MappedPort(ctx, "8888/tcp")
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	// Set up client for making requests to the containerized app
 	client := &http.Client{
 		Timeout: 5 * time.Second,
 	}
 
-	// Make requests to the containerized app and assert the responses
-	// Example: Make an HTTP request to the root endpoint
-	resp, err := client.Get("http://" + host + ":" + strconv.Itoa(port.Int()) + "/")
+	mappedPort, err := container.MappedPort(ctx, "8888")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := client.Get("http://" + host + ":" + mappedPort.Port() + "/")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,7 +66,7 @@ func TestApp(t *testing.T) {
 	// Any requeset body will work since POST requests are not currently allowed
 	requestBody := []byte(`{"key": "value"}`)
 
-	resp, err = client.Post("http://" + host + ":" + strconv.Itoa(port.Int()) + "/", "application/json", bytes.NewBuffer(requestBody))
+	resp, err = client.Post("http://"+host+":"+mappedPort.Port()+"/", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		t.Fatal(err)
 	}
