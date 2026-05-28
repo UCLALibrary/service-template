@@ -2,6 +2,8 @@
 
 This is a simple GoLang service template that utilizes Echo. It is meant to serve as the foundation for a variety of microservices.
 
+***Note that this project has been deprecated. UCLA Library will no longer be supporting or updating it.**
+
 ## Building the Project
 
 To run the project run: 
